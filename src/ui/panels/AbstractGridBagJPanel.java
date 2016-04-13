@@ -6,16 +6,14 @@ import ui.UIConstants;
 
 public abstract class AbstractGridBagJPanel extends JPanel implements UIConstants {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    public AbstractGridBagJPanel() {
-	super();
-	this.setLayout(gbl);
-    }
-    
-    
+	public AbstractGridBagJPanel() {
+		super();
+		this.setLayout(gbl);
+	}
 
 }

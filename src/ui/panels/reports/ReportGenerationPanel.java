@@ -3,6 +3,9 @@ package ui.panels.reports;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +18,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -110,8 +114,8 @@ public class ReportGenerationPanel extends AbstractGridBagJPanel implements Sele
 
 					ResultSet rs = ps.executeQuery();
 					while (rs.next()) {
-						timesList.add(new TimeRow(rs.getInt("id"), rs.getInt("sub_task_id"),
-								rs.getTimestamp("start_time"), rs.getTimestamp("end_time")));
+						timesList.add(new TimeRow(rs.getInt("id"), rs.getInt("sub_task_id"), rs.getTimestamp("start_time"),
+								rs.getTimestamp("end_time")));
 					}
 
 				} catch (SQLException e1) {
@@ -124,7 +128,7 @@ public class ReportGenerationPanel extends AbstractGridBagJPanel implements Sele
 							System.out.println(tr.toString());
 						}
 					}
-				// buildTimeCardPDF(timesList);
+				buildTimeCardCSV(timesList);
 			}
 		});
 
@@ -176,36 +180,47 @@ public class ReportGenerationPanel extends AbstractGridBagJPanel implements Sele
 
 	}
 
-	protected void buildTimeCardPDF(ArrayList<TimeRow> timesList) {
+	private void buildTimeCardCSV(ArrayList<TimeRow> timesList) {
+		String filename = "output.txt";
 
-		PDDocument doc = new PDDocument();
-		String filename = "output.pdf";
+		long count = 0;
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("Report for " + startTime.getDate().toString() + " through " + endTime.getDate().toString() + "\nTask: "
+				+ (String) taskComboBox.getSelectedItem() + "\nSubTask: " + (String) subTaskComboBox.getSelectedItem()
+				+ "\n\n");
+		for (TimeRow tr : timesList) {
+			sb.append("\tStarted: " + tr.getStartTime().toString() + "\n");
+			sb.append("\tEnded  : " + tr.getEndTime().toString() + "\n");
+
+			long diff = tr.getEndTime().getTime() - tr.getStartTime().getTime();
+			count += diff;
+			long dsecs = (int) diff / (int) 1000 % 60;
+			long dminutes = (int) diff / (int) (60 * 1000);
+			long dhours = (int) diff / (int) (60 * 60 * 1000);
+			// long ddays = diff / (24 * 60 * 60 * 1000);
+
+			sb.append("\tDuration : " + String.format("%02d", dhours) + ":" + String.format("%02d", dminutes) + ":"
+					+ String.format("%02d", dsecs) + "." + (diff % 1000) + "\n\n");
+
+		}
+		long dsecs = (int) count / 1000 % 60;
+		long dminutes = (int) count / (60 * 1000);
+		long dhours = (int) count / (60 * 60 * 1000);
+		sb.append("\tTotal Duration : " + String.format("%02d", dhours) + ":" + String.format("%02d", dminutes) + ":"
+				+ String.format("%02d", dsecs) + "." + (count % 1000) + "\n\n");
+
 		try {
-			PDPage page = new PDPage();
-			doc.addPage(page);
-
-			PDFont font = PDFontFactory.createDefaultFont();
-			PDPageContentStream contents = new PDPageContentStream(doc, page);
-			contents.beginText();
-			contents.setFont(font, 12);
-			contents.newLineAtOffset(100, 700);
-			contents.showText(timesList.get(0).toString().replace('\n', ' '));
-			contents.endText();
-			contents.close();
-
-			doc.save(filename);
-
+			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filename)));
+			bw.write(sb.toString());
+			bw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			try {
-				doc.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
+
+		JOptionPane.showMessageDialog(null, sb.toString());
 
 	}
 

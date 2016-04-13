@@ -11,8 +11,8 @@ public class DatabaseConnector {
 
 	private static Connection dbcon;
 
-//	private final static boolean prodDB = true;
-	 private final static boolean prodDB = false;
+	private final static boolean prodDB = true;
+	// private final static boolean prodDB = false;
 	private static Properties props;
 	private static String url;
 

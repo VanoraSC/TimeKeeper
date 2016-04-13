@@ -118,8 +118,8 @@ public class TimeDeletionPanel extends AbstractTaskChangerGridBagJPanel implemen
 							ps.setInt(1, tr.getSubTasks().get(i).getId());
 							ResultSet rs = ps.executeQuery();
 							while (rs.next()) {
-								timesList.add(new TimeRow(rs.getInt("id"), rs.getInt("sub_task_id"),
-										rs.getTimestamp("start_time"), rs.getTimestamp("end_time")));
+								timesList.add(new TimeRow(rs.getInt("id"), rs.getInt("sub_task_id"), rs.getTimestamp("start_time"),
+										rs.getTimestamp("end_time")));
 
 							}
 						} catch (SQLException e) {
@@ -217,8 +217,8 @@ public class TimeDeletionPanel extends AbstractTaskChangerGridBagJPanel implemen
 								ps.setInt(1, str.getId());
 								ResultSet rs = ps.executeQuery();
 								while (rs.next()) {
-									timesList.add(new TimeRow(rs.getInt("id"), rs.getInt("sub_task_id"),
-											rs.getTimestamp("start_time"), rs.getTimestamp("end_time")));
+									timesList.add(new TimeRow(rs.getInt("id"), rs.getInt("sub_task_id"), rs.getTimestamp("start_time"),
+											rs.getTimestamp("end_time")));
 
 								}
 							} catch (SQLException e2) {

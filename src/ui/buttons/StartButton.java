@@ -2,20 +2,20 @@ package ui.buttons;
 
 public class StartButton extends TimeChangerJButton {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    public static void main(String[] args) {
-	StartButton sb = new StartButton();
+	public static void main(String[] args) {
+		StartButton sb = new StartButton();
 
-	sb.doClick();
-    }
+		sb.doClick();
+	}
 
-    public StartButton() {
-	super(TIME_START);
-	this.setText("Start");
-    }
+	public StartButton() {
+		super(TIME_START);
+		this.setText("Start");
+	}
 
 }

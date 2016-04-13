@@ -29,189 +29,174 @@ import ui.factory.layout.GridBagConstraintsFactory;
 import ui.panels.tasks.table.ButtonColumn;
 
 public class SubTaskDeletionPanel extends AbstractTaskChangerGridBagJPanel
-	implements SelectStatements, DeleteStatements {
+		implements SelectStatements, DeleteStatements {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    JPanel newPanel = new JPanel();
-
-    private JComboBox<String> tasksComboBox = new JComboBox<String>();
-    private JTable subTaskTable;
-
-    public static void main(String[] args) {
-
-	CustomJFrame frame = new CustomJFrame();
-	frame.add(new SubTaskDeletionPanel());
-    }
-
-    public SubTaskDeletionPanel() {
-	super();
-	updateComboBox();
-
-	updateTable();
-	this.setLayout(gbl);
-
-	newPanel.setLayout(gbl);
-	GridBagConstraints gbc = GridBagConstraintsFactory.buildConstraints();
-	gbc.gridx = 0;
-	gbc.gridy = 0;
-
-	tasksComboBox.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		updateTable();
-		subTaskTable.repaint();
-	    }
-	});
-	newPanel.add(tasksComboBox, gbc);
-	gbc.gridy++;
-
-	newPanel.add(subTaskTable, gbc);
-
-	this.add(newPanel, GridBagConstraintsFactory.buildConstraints());
-
-    }
-
-    protected void updateTable() {
-
-	String taskName = (String) tasksComboBox.getSelectedItem();
-	for (TaskRow tr : TaskChooserPanel.getTasksList()) {
-	    if (tr.getName().equalsIgnoreCase(taskName)) {
-
-		Object[][] objectSubTasks = new Object[tr.getSubTasks()
-			.size()][4];
-		String[] columnNames = new String[] { "ID", "Name", "NumTimes",
-			"Delete" };
-		Connection dbCon = DatabaseConnector.getConnection();
-
-		for (int i = 0; i < tr.getSubTasks().size(); i++) {
-
-		    int timesCount = 0;
-		    try {
-			PreparedStatement ps = dbCon
-				.prepareStatement(selectTimesForSubTask);
-			ps.setInt(1, tr.getSubTasks().get(i).getId());
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-			    timesCount++;
-
-			}
-		    } catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
-
-		    objectSubTasks[i][0] = tr.getSubTasks().get(i).getId();
-		    objectSubTasks[i][1] = tr.getSubTasks().get(i).getName();
-		    objectSubTasks[i][2] = new Integer(timesCount);
-		    objectSubTasks[i][3] = "Delete";
-
-		}
-
-		if (subTaskTable == null)
-		    subTaskTable = new JTable(
-			    new DefaultTableModel(objectSubTasks, columnNames));
-		else
-		    subTaskTable.setModel(
-			    new DefaultTableModel(objectSubTasks, columnNames));
-
-		final TableColumnModel columnModel = subTaskTable
-			.getColumnModel();
-
-		for (int column = 0; column < subTaskTable
-			.getColumnCount(); column++) {
-		    int width = 0; // Min width
-		    for (int row = 0; row < subTaskTable.getRowCount(); row++) {
-
-			TableCellRenderer renderer = subTaskTable
-				.getCellRenderer(row, column);
-			Component comp = subTaskTable.prepareRenderer(renderer,
-				row, column);
-			width = Math.max(comp.getPreferredSize().width + 50,
-				width);
-
-		    }
-		    columnModel.getColumn(column).setPreferredWidth(width);
-		}
-
-	    }
-	}
-	DeleteSubTaskAction delete = new DeleteSubTaskAction(taskName);
-	new ButtonColumn(subTaskTable, delete, 3);
-	subTaskTable.repaint();
-    }
-
-    protected void updateComboBox() {
-	synchronized (this) {
-	    tasksComboBox.removeAllItems();
-	    for (TaskRow tr : TaskChooserPanel.getTasksList()) {
-		tasksComboBox.addItem(tr.getName());
-	    }
-	}
-    }
-
-    private class DeleteSubTaskAction extends AbstractAction {
-
-	private String taskName;
-
-	public DeleteSubTaskAction(String taskName) {
-	    super();
-	    this.taskName = taskName;
-
-	}
-
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 
-	public void actionPerformed(ActionEvent e) {
+	JPanel newPanel = new JPanel();
 
-	    Connection dbCon = DatabaseConnector.getConnection();
+	private JComboBox<String> tasksComboBox = new JComboBox<String>();
+	private JTable subTaskTable;
 
-	    ArrayList<SubTaskRow> subTasks = null;
-	    for (TaskRow tr : TaskChooserPanel.getTasksList()) {
-		if (tr.getName().equalsIgnoreCase(taskName)) {
-		    subTasks = tr.getSubTasks();
-		    break;
-		}
-	    }
+	public static void main(String[] args) {
 
-	    SubTaskRow subTask = subTasks
-		    .get(Integer.valueOf(e.getActionCommand()));
+		CustomJFrame frame = new CustomJFrame();
+		frame.add(new SubTaskDeletionPanel());
+	}
 
-	    Object[] options = { "Yes", "No" };
-	    int answer = JOptionPane.showOptionDialog(null,
-		    "Are you sure you want to delete " + subTask.getName()
-			    + "?",
-		    "Confirm Delete", JOptionPane.YES_NO_OPTION,
-		    JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+	public SubTaskDeletionPanel() {
+		super();
+		updateComboBox();
 
-	    if (!(answer == JOptionPane.YES_OPTION))
-		return;
+		updateTable();
+		this.setLayout(gbl);
 
-	    if (DEBUG)
-		System.out.println("Deleting " + subTask.getName());
+		newPanel.setLayout(gbl);
+		GridBagConstraints gbc = GridBagConstraintsFactory.buildConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
 
-	    try {
-		PreparedStatement ps = dbCon
-			.prepareStatement(deleteTimeBySubTaskID);
-		ps.setInt(1, subTask.getId());
-		ps.executeUpdate();
+		tasksComboBox.addActionListener(new ActionListener() {
 
-		ps = dbCon.prepareStatement(deleteSubTask);
-		ps.setInt(1, subTask.getId());
-		ps.executeUpdate();
-	    } catch (SQLException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	    }
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateTable();
+				subTaskTable.repaint();
+			}
+		});
+		newPanel.add(tasksComboBox, gbc);
+		gbc.gridy++;
 
-	    notifyListeners();
-	    updateTable();
+		newPanel.add(subTaskTable, gbc);
+
+		this.add(newPanel, GridBagConstraintsFactory.buildConstraints());
 
 	}
 
-    }
+	protected void updateTable() {
+
+		String taskName = (String) tasksComboBox.getSelectedItem();
+		for (TaskRow tr : TaskChooserPanel.getTasksList()) {
+			if (tr.getName().equalsIgnoreCase(taskName)) {
+
+				Object[][] objectSubTasks = new Object[tr.getSubTasks().size()][4];
+				String[] columnNames = new String[] { "ID", "Name", "NumTimes", "Delete" };
+				Connection dbCon = DatabaseConnector.getConnection();
+
+				for (int i = 0; i < tr.getSubTasks().size(); i++) {
+
+					int timesCount = 0;
+					try {
+						PreparedStatement ps = dbCon.prepareStatement(selectTimesForSubTask);
+						ps.setInt(1, tr.getSubTasks().get(i).getId());
+						ResultSet rs = ps.executeQuery();
+						while (rs.next()) {
+							timesCount++;
+
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					objectSubTasks[i][0] = tr.getSubTasks().get(i).getId();
+					objectSubTasks[i][1] = tr.getSubTasks().get(i).getName();
+					objectSubTasks[i][2] = new Integer(timesCount);
+					objectSubTasks[i][3] = "Delete";
+
+				}
+
+				if (subTaskTable == null)
+					subTaskTable = new JTable(new DefaultTableModel(objectSubTasks, columnNames));
+				else
+					subTaskTable.setModel(new DefaultTableModel(objectSubTasks, columnNames));
+
+				final TableColumnModel columnModel = subTaskTable.getColumnModel();
+
+				for (int column = 0; column < subTaskTable.getColumnCount(); column++) {
+					int width = 0; // Min width
+					for (int row = 0; row < subTaskTable.getRowCount(); row++) {
+
+						TableCellRenderer renderer = subTaskTable.getCellRenderer(row, column);
+						Component comp = subTaskTable.prepareRenderer(renderer, row, column);
+						width = Math.max(comp.getPreferredSize().width + 50, width);
+
+					}
+					columnModel.getColumn(column).setPreferredWidth(width);
+				}
+
+			}
+		}
+		DeleteSubTaskAction delete = new DeleteSubTaskAction(taskName);
+		new ButtonColumn(subTaskTable, delete, 3);
+		subTaskTable.repaint();
+	}
+
+	protected void updateComboBox() {
+		synchronized (this) {
+			tasksComboBox.removeAllItems();
+			for (TaskRow tr : TaskChooserPanel.getTasksList()) {
+				tasksComboBox.addItem(tr.getName());
+			}
+		}
+	}
+
+	private class DeleteSubTaskAction extends AbstractAction {
+
+		private String taskName;
+
+		public DeleteSubTaskAction(String taskName) {
+			super();
+			this.taskName = taskName;
+
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
+
+			Connection dbCon = DatabaseConnector.getConnection();
+
+			ArrayList<SubTaskRow> subTasks = null;
+			for (TaskRow tr : TaskChooserPanel.getTasksList()) {
+				if (tr.getName().equalsIgnoreCase(taskName)) {
+					subTasks = tr.getSubTasks();
+					break;
+				}
+			}
+
+			SubTaskRow subTask = subTasks.get(Integer.valueOf(e.getActionCommand()));
+
+			Object[] options = { "Yes", "No" };
+			int answer = JOptionPane.showOptionDialog(null, "Are you sure you want to delete " + subTask.getName() + "?",
+					"Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+			if (!(answer == JOptionPane.YES_OPTION))
+				return;
+
+			if (DEBUG)
+				System.out.println("Deleting " + subTask.getName());
+
+			try {
+				PreparedStatement ps = dbCon.prepareStatement(deleteTimeBySubTaskID);
+				ps.setInt(1, subTask.getId());
+				ps.executeUpdate();
+
+				ps = dbCon.prepareStatement(deleteSubTask);
+				ps.setInt(1, subTask.getId());
+				ps.executeUpdate();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			notifyListeners();
+			updateTable();
+
+		}
+
+	}
 }
