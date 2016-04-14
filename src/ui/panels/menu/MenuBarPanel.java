@@ -12,7 +12,8 @@ import classes.listeners.tasks.TaskChangeListener;
 import ui.CustomJFrame;
 import ui.factory.layout.GridBagConstraintsFactory;
 import ui.panels.AbstractGridBagJPanel;
-import ui.panels.reports.ReportGenerationPanel;
+import ui.panels.reports.SubTaskTimeReportGenerationPanel;
+import ui.panels.reports.TaskTimeReportGenerationPanel;
 import ui.panels.tasks.SubTaskAdditionPanel;
 import ui.panels.tasks.SubTaskDeletionPanel;
 import ui.panels.tasks.TaskAdditionPanel;
@@ -45,7 +46,8 @@ public class MenuBarPanel extends AbstractGridBagJPanel implements TaskChangeLis
 	private TaskChangeListener self = this;
 	private JMenu reportsMenu = new JMenu("Reports");
 
-	private JMenuItem viewTimesMenuItem = new JMenuItem("View Time for SubTask");
+	private JMenuItem viewTimesTaskMenuItem = new JMenuItem("View Time for Task");
+	private JMenuItem viewTimesSubTaskMenuItem = new JMenuItem("View Time for SubTask");
 
 	public MenuBarPanel() {
 		super();
@@ -71,7 +73,8 @@ public class MenuBarPanel extends AbstractGridBagJPanel implements TaskChangeLis
 
 		menuBar.add(deleteMenu);
 
-		reportsMenu.add(viewTimesMenuItem);
+		reportsMenu.add(viewTimesTaskMenuItem);
+		reportsMenu.add(viewTimesSubTaskMenuItem);
 		menuBar.add(reportsMenu);
 		exitMenu.add(exitMenuItem);
 		menuBar.add(exitMenu);
@@ -147,13 +150,25 @@ public class MenuBarPanel extends AbstractGridBagJPanel implements TaskChangeLis
 			}
 		});
 
-		viewTimesMenuItem.addActionListener(new ActionListener() {
+		viewTimesSubTaskMenuItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ReportGenerationPanel tdp = new ReportGenerationPanel();
+				SubTaskTimeReportGenerationPanel tdp = new SubTaskTimeReportGenerationPanel();
 
-				CustomJFrame frame = new CustomJFrame("Generate Time Card", false);
+				CustomJFrame frame = new CustomJFrame("Generate Time Card for SubTask", false);
+				frame.add(tdp);
+
+			}
+		});
+
+		viewTimesTaskMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TaskTimeReportGenerationPanel tdp = new TaskTimeReportGenerationPanel();
+
+				CustomJFrame frame = new CustomJFrame("Generate Time Card for Task", false);
 				frame.add(tdp);
 
 			}

@@ -18,17 +18,17 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.ScrollPaneLayout;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import com.github.lgooddatepicker.datepicker.DatePicker;
 
+import classes.time.DatePickerFactory;
 import database.DatabaseConnector;
 import database.databaseRows.SubTaskRow;
 import database.databaseRows.TaskRow;
@@ -39,7 +39,7 @@ import ui.factory.layout.GridBagConstraintsFactory;
 import ui.panels.AbstractGridBagJPanel;
 import ui.panels.tasks.TaskChooserPanel;
 
-public class ReportGenerationPanel extends AbstractGridBagJPanel implements SelectStatements {
+public class SubTaskTimeReportGenerationPanel extends AbstractGridBagJPanel implements SelectStatements {
 
 	private JButton reportsButton;
 	private JComboBox<String> taskComboBox;
@@ -51,7 +51,7 @@ public class ReportGenerationPanel extends AbstractGridBagJPanel implements Sele
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ReportGenerationPanel() {
+	public SubTaskTimeReportGenerationPanel() {
 		initComponents();
 
 		this.setLayout(gbl);
@@ -122,45 +122,20 @@ public class ReportGenerationPanel extends AbstractGridBagJPanel implements Sele
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				if (DEBUG)
-					for (TimeRow tr : timesList) {
-						if (tr.getStartTime().after(start) && tr.getEndTime().before(end)) {
+				ArrayList<TimeRow> filteredTimesList = new ArrayList<TimeRow>();
+				for (TimeRow tr : timesList) {
+					if (tr.getStartTime().after(start) && tr.getEndTime().before(end)) {
+						filteredTimesList.add(tr);
+						if (DEBUG)
 							System.out.println(tr.toString());
-						}
-					}
-				buildTimeCardCSV(timesList);
+					} 
+				}
+				buildTimeCardCSV(filteredTimesList);
 			}
 		});
 
-		startTime = new DatePicker();
-		endTime = new DatePicker();
-
-		switch (LocalDate.now().getDayOfWeek()) {
-		case MONDAY:
-			startTime.setDate(LocalDate.now().minusDays(1));
-			break;
-		case TUESDAY:
-			startTime.setDate(LocalDate.now().minusDays(2));
-			break;
-		case WEDNESDAY:
-			startTime.setDate(LocalDate.now().minusDays(3));
-			break;
-		case THURSDAY:
-			startTime.setDate(LocalDate.now().minusDays(4));
-			break;
-		case FRIDAY:
-			startTime.setDate(LocalDate.now().minusDays(5));
-			break;
-		case SATURDAY:
-			startTime.setDate(LocalDate.now().minusDays(6));
-			break;
-		case SUNDAY:
-			startTime.setDate(LocalDate.now().minusDays(7));
-			break;
-
-		}
-
-		endTime.setDate(LocalDate.now());
+		startTime = DatePickerFactory.buildStartDatePicker();
+		endTime = DatePickerFactory.buildEndDatePicker();
 
 		taskComboBox = new JComboBox<String>();
 		taskComboBox.addActionListener(new ActionListener() {
@@ -220,7 +195,22 @@ public class ReportGenerationPanel extends AbstractGridBagJPanel implements Sele
 			e.printStackTrace();
 		}
 
-		JOptionPane.showMessageDialog(null, sb.toString());
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(new EtchedBorder(),
+				(String) taskComboBox.getSelectedItem() + " - " + (String) subTaskComboBox.getSelectedItem()));
+
+		// create the middle panel components
+
+		JTextArea jta = new JTextArea(16, 58);
+		jta.setText(sb.toString());
+		jta.setEditable(false); // set textArea non-editable
+		JScrollPane jsp = new JScrollPane(jta);
+		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+		// Add Textarea in to middle panel
+		panel.add(jsp);
+
+		new CustomJFrame("Time Card", false).add(panel);
 
 	}
 
@@ -240,7 +230,7 @@ public class ReportGenerationPanel extends AbstractGridBagJPanel implements Sele
 	public static void main(String[] args) {
 		CustomJFrame frame = new CustomJFrame();
 		frame.setLayout(gbl);
-		frame.add(new ReportGenerationPanel(), GridBagConstraintsFactory.buildConstraints());
+		frame.add(new SubTaskTimeReportGenerationPanel(), GridBagConstraintsFactory.buildConstraints());
 
 	}
 

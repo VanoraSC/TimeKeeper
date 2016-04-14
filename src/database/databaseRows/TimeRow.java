@@ -3,12 +3,12 @@ package database.databaseRows;
 import java.sql.Timestamp;
 
 public class TimeRow {
-	private int id, parentID;
+	private int id, subTaskID;
 	private Timestamp startTime, endTime;
 
 	public TimeRow(int id, int sub_task_id, Timestamp start_time, Timestamp end_time) {
 		this.setId(id);
-		this.setParentID(parentID);
+		this.setSubtaskID(sub_task_id);
 		this.setStartTime(start_time);
 		this.setEndTime(end_time);
 	}
@@ -21,8 +21,8 @@ public class TimeRow {
 		return id;
 	}
 
-	public int getParentID() {
-		return parentID;
+	public int getSubTaskID() {
+		return subTaskID;
 	}
 
 	public Timestamp getStartTime() {
@@ -37,8 +37,8 @@ public class TimeRow {
 		this.id = id;
 	}
 
-	private void setParentID(int parentID) {
-		this.parentID = parentID;
+	private void setSubtaskID(int parentID) {
+		this.subTaskID = parentID;
 	}
 
 	private void setStartTime(Timestamp startTime) {
@@ -49,7 +49,7 @@ public class TimeRow {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("ID: " + this.id + "\n");
-		sb.append("SubTask ID: " + this.parentID + "\n");
+		sb.append("SubTask ID: " + this.subTaskID + "\n");
 		sb.append("Start Time:" + this.startTime.toString() + "\n");
 		sb.append("End Time: " + this.endTime.toString() + "\n");
 		return sb.toString();
