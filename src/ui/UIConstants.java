@@ -11,8 +11,8 @@ public interface UIConstants {
 	final static String ADD_TASK = "  Add Task  ";
 	static final double COMBO_BOX_WEIGHT = 1;
 	final static int COMBO_BOX_X = 1;
-	// final static boolean DEBUG = false;
-	final static boolean DEBUG = true;
+	 final static boolean DEBUG = false;
+//	final static boolean DEBUG = true;
 	final static GridBagLayout gbl = GridBagLayoutFactory.buildLayout();
 	static final double LABEL_WEIGHT = 0;
 	final static int LABEL_X = 0;
