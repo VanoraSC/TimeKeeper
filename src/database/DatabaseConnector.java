@@ -1,6 +1,10 @@
 package database;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +14,9 @@ import java.util.Properties;
 public class DatabaseConnector {
 
 	private static Connection dbcon;
+	private static String USERNAME;
+	private static String PASSWORD;
+	private static String DATABASE;
 
 	private final static boolean prodDB = true;
 	// private final static boolean prodDB = false;
@@ -23,6 +30,13 @@ public class DatabaseConnector {
 	static {
 
 		try {
+			getPropValues();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		try {
 			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
@@ -31,13 +45,13 @@ public class DatabaseConnector {
 		}
 		props = new Properties();
 
-		props.setProperty("user", "pete");
-		props.setProperty("password", "asshole17");
+		props.setProperty("user", USERNAME);
+		props.setProperty("password", PASSWORD);
 
 		if (prodDB)
-			url = "jdbc:postgresql://192.168.1.112/WorkTracking";
+			url = DATABASE;
 		else
-			url = "jdbc:postgresql://192.168.1.112/WorkTracking_DEV";
+			url = DATABASE + "_DEV";
 		try {
 			dbcon = DriverManager.getConnection(url, props);
 		} catch (SQLException e) {
@@ -51,7 +65,8 @@ public class DatabaseConnector {
 		return dbcon;
 	}
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, IOException {
+
 		System.out.println(dbcon);
 		String statement = "select id, name from time_card.tasks";
 		PreparedStatement ps = dbcon.prepareStatement(statement);
@@ -63,4 +78,32 @@ public class DatabaseConnector {
 		}
 	}
 
+	private static String getPropValues() throws IOException {
+
+		InputStream inputStream = null;
+		String result = null;
+		try {
+			Properties prop = new Properties();
+			String propFileName = "config.properties";
+
+			inputStream = DatabaseConnector.class.getClassLoader().getResourceAsStream(propFileName);
+
+			if (inputStream != null) {
+				prop.load(inputStream);
+			} else {
+				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+			}
+
+			// get the property value and print it out
+			USERNAME = prop.getProperty("username");
+			DATABASE = prop.getProperty("database");
+			PASSWORD = prop.getProperty("password");
+
+		} catch (Exception e) {
+			System.out.println("Exception: " + e);
+		} finally {
+			inputStream.close();
+		}
+		return result;
+	}
 }
