@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -128,7 +129,7 @@ public class SubTaskTimeReportGenerationPanel extends AbstractGridBagJPanel impl
 						filteredTimesList.add(tr);
 						if (DEBUG)
 							System.out.println(tr.toString());
-					} 
+					}
 				}
 				buildTimeCardCSV(filteredTimesList);
 			}
@@ -171,20 +172,11 @@ public class SubTaskTimeReportGenerationPanel extends AbstractGridBagJPanel impl
 
 			long diff = tr.getEndTime().getTime() - tr.getStartTime().getTime();
 			count += diff;
-			long dsecs = (int) diff / (int) 1000 % 60;
-			long dminutes = (int) diff / (int) (60 * 1000);
-			long dhours = (int) diff / (int) (60 * 60 * 1000);
-			// long ddays = diff / (24 * 60 * 60 * 1000);
-
-			sb.append("\tDuration : " + String.format("%02d", dhours) + ":" + String.format("%02d", dminutes) + ":"
-					+ String.format("%02d", dsecs) + "." + (diff % 1000) + "\n\n");
+			sb.append("\tDuration : " + getDurationBreakdown(diff));
 
 		}
-		long dsecs = (int) count / 1000 % 60;
-		long dminutes = (int) count / (60 * 1000);
-		long dhours = (int) count / (60 * 60 * 1000);
-		sb.append("\tTotal Duration : " + String.format("%02d", dhours) + ":" + String.format("%02d", dminutes) + ":"
-				+ String.format("%02d", dsecs) + "." + (count % 1000) + "\n\n");
+
+		sb.append("\tTotal Duration : " + getDurationBreakdown(count));
 
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filename)));
@@ -225,6 +217,28 @@ public class SubTaskTimeReportGenerationPanel extends AbstractGridBagJPanel impl
 				}
 			}
 		}
+	}
+
+	public static String getDurationBreakdown(long millis) {
+		if (millis < 0) {
+			throw new IllegalArgumentException("Duration must be greater than zero!");
+		}
+
+		long days = TimeUnit.MILLISECONDS.toDays(millis);
+		millis -= TimeUnit.DAYS.toMillis(days);
+		long hours = TimeUnit.MILLISECONDS.toHours(millis);
+		millis -= TimeUnit.HOURS.toMillis(hours);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+		millis -= TimeUnit.MINUTES.toMillis(minutes);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+		long milliseconds = TimeUnit.MILLISECONDS.toMillis(millis);
+
+		StringBuilder sb = new StringBuilder(64);
+
+		sb.append((days > 0 ? (days + " Days, ") : "") + String.format("%02d", hours) + ":" + String.format("%02d", minutes)
+				+ ":" + String.format("%02d", seconds) + "." + (milliseconds) + "\n\n");
+
+		return (sb.toString());
 	}
 
 	public static void main(String[] args) {
