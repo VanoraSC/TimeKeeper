@@ -118,7 +118,7 @@ public class TaskTimeReportGenerationPanel extends AbstractGridBagJPanel impleme
 
 				ArrayList<TimeRow> filteredTimesList = new ArrayList<TimeRow>();
 				for (TimeRow tr : timesList) {
-					if (tr.getStartTime().after(start) && tr.getEndTime().before(end)) {
+					if (tr.getStartTime().after(start) && tr.getStartTime().before(end)) {
 						filteredTimesList.add(tr);
 						if (DEBUG)
 							System.out.println(tr.toString());
@@ -159,23 +159,27 @@ public class TaskTimeReportGenerationPanel extends AbstractGridBagJPanel impleme
 		sb.append("Report for " + startTime.getDate().toString() + " through " + endTime.getDate().toString() + "\n");
 		for (SubTaskRow str : task.getSubTasks()) {
 			long count = 0;
-			sb.append("Task: " + (String) taskComboBox.getSelectedItem() + "\nSubTask: " + str.getName() + "\n\n");
+
+			StringBuilder sb2 = new StringBuilder();
+			sb2.append("Task: " + (String) taskComboBox.getSelectedItem() + "\nSubTask: " + str.getName() + "\n\n");
 
 			for (TimeRow tr : timesList) {
 				if (tr.getSubTaskID() == str.getId()) {
-					sb.append("\tStarted: " + tr.getStartTime().toString() + "\n");
-					sb.append("\tEnded  : " + tr.getEndTime().toString() + "\n");
+					sb2.append("\tStarted: " + tr.getStartTime().toString() + "\n");
+					sb2.append("\tEnded  : " + tr.getEndTime().toString() + "\n");
 
 					long diff = tr.getEndTime().getTime() - tr.getStartTime().getTime();
 					count += diff;
 
-					sb.append("\tDuration : " + getDurationBreakdown(diff));
+					sb2.append("\tDuration : " + getDurationBreakdown(diff));
 
 				}
 			}
 
-			sb.append("\tTotal Duration : " + getDurationBreakdown(count));
+			sb2.append("\tTotal Duration : " + getDurationBreakdown(count));
 			totalCount += count;
+			if (count > 0)
+				sb.append(sb2.toString());
 		}
 
 		sb.append("Total Duration for Task " + task.getName() + ": " + getDurationBreakdown(totalCount));
@@ -225,19 +229,19 @@ public class TaskTimeReportGenerationPanel extends AbstractGridBagJPanel impleme
 			throw new IllegalArgumentException("Duration must be greater than zero!");
 		}
 
-		long days = TimeUnit.MILLISECONDS.toDays(millis);
-		millis -= TimeUnit.DAYS.toMillis(days);
+//		long days = TimeUnit.MILLISECONDS.toDays(millis);
+//		millis -= TimeUnit.DAYS.toMillis(days);
 		long hours = TimeUnit.MILLISECONDS.toHours(millis);
 		millis -= TimeUnit.HOURS.toMillis(hours);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
 		millis -= TimeUnit.MINUTES.toMillis(minutes);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-		long milliseconds = TimeUnit.MILLISECONDS.toMillis(millis);
+//		long milliseconds = TimeUnit.MILLISECONDS.toMillis(millis);
 
-		StringBuilder sb = new StringBuilder(64);
+		StringBuilder sb = new StringBuilder();
 
-		sb.append((days > 0 ? (days + " Days, ") : "") + String.format("%02d", hours) + ":" + String.format("%02d", minutes)
-				+ ":" + String.format("%02d", seconds) + "." + (milliseconds) + "\n\n");
+		sb.append( String.format("%02d", hours) + ":" + String.format("%02d", minutes)
+				+ ":" + String.format("%02d", seconds) + "\n\n");
 
 		return (sb.toString());
 	}
