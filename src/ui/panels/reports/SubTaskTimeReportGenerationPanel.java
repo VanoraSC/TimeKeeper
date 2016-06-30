@@ -224,19 +224,19 @@ public class SubTaskTimeReportGenerationPanel extends AbstractGridBagJPanel impl
 			throw new IllegalArgumentException("Duration must be greater than zero!");
 		}
 
-		long days = TimeUnit.MILLISECONDS.toDays(millis);
-		millis -= TimeUnit.DAYS.toMillis(days);
+		// long days = TimeUnit.MILLISECONDS.toDays(millis);
+		// millis -= TimeUnit.DAYS.toMillis(days);
 		long hours = TimeUnit.MILLISECONDS.toHours(millis);
 		millis -= TimeUnit.HOURS.toMillis(hours);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
 		millis -= TimeUnit.MINUTES.toMillis(minutes);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-		long milliseconds = TimeUnit.MILLISECONDS.toMillis(millis);
+		// long milliseconds = TimeUnit.MILLISECONDS.toMillis(millis);
 
-		StringBuilder sb = new StringBuilder(64);
+		StringBuilder sb = new StringBuilder();
 
-		sb.append((days > 0 ? (days + " Days, ") : "") + String.format("%02d", hours) + ":" + String.format("%02d", minutes)
-				+ ":" + String.format("%02d", seconds) + "." + (milliseconds) + "\n\n");
+		sb.append(String.format("%02d", hours) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds)
+				+ "\n\n");
 
 		return (sb.toString());
 	}
