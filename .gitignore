@@ -47,3 +47,4 @@ Temporary Items
 .apdisk
 *.class
 /output.txt
+/bin

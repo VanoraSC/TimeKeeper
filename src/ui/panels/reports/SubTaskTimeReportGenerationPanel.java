@@ -125,7 +125,7 @@ public class SubTaskTimeReportGenerationPanel extends AbstractGridBagJPanel impl
 				}
 				ArrayList<TimeRow> filteredTimesList = new ArrayList<TimeRow>();
 				for (TimeRow tr : timesList) {
-					if (tr.getStartTime().after(start) && tr.getEndTime().before(end)) {
+					if (tr.getStartTime().after(start) && tr.getStartTime().before(end)) {
 						filteredTimesList.add(tr);
 						if (DEBUG)
 							System.out.println(tr.toString());
