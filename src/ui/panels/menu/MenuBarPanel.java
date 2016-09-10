@@ -18,6 +18,7 @@ import ui.panels.tasks.SubTaskAdditionPanel;
 import ui.panels.tasks.SubTaskDeletionPanel;
 import ui.panels.tasks.TaskAdditionPanel;
 import ui.panels.tasks.TaskDeletionPanel;
+import ui.panels.tasks.TimeAdditionPanel;
 import ui.panels.tasks.TimeDeletionPanel;
 
 public class MenuBarPanel extends AbstractGridBagJPanel implements TaskChangeListener {
@@ -41,6 +42,7 @@ public class MenuBarPanel extends AbstractGridBagJPanel implements TaskChangeLis
 	private JMenuItem newSubTaskMenuItem = new JMenuItem("New SubTask");
 
 	private JMenuItem newTaskMenuItem = new JMenuItem("New Task");
+	private JMenuItem newTimeMenuItem = new JMenuItem("New Time");
 	private JMenu newMenu = new JMenu("New");
 
 	private TaskChangeListener self = this;
@@ -64,6 +66,7 @@ public class MenuBarPanel extends AbstractGridBagJPanel implements TaskChangeLis
 	private void addComponents() {
 		newMenu.add(newTaskMenuItem);
 		newMenu.add(newSubTaskMenuItem);
+		newMenu.add(newTimeMenuItem);
 
 		menuBar.add(newMenu);
 
@@ -112,6 +115,18 @@ public class MenuBarPanel extends AbstractGridBagJPanel implements TaskChangeLis
 				stap.register(self);
 				CustomJFrame frame = new CustomJFrame("Add New Sub Tasks", false);
 				frame.add(stap);
+
+			}
+		});
+		
+		newTimeMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TimeAdditionPanel tap = new TimeAdditionPanel();
+				tap.register(self);
+				CustomJFrame frame = new CustomJFrame("Add New Times", false);
+				frame.add(tap);
 
 			}
 		});

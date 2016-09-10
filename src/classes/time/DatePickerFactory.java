@@ -5,6 +5,11 @@ import java.time.LocalDate;
 import com.github.lgooddatepicker.datepicker.DatePicker;
 
 public class DatePickerFactory {
+	
+	public static DatePicker buildTodayDatePicker()
+	{
+		return buildEndDatePicker();
+	}
 
 	public static DatePicker buildStartDatePicker() {
 

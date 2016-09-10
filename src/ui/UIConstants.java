@@ -7,6 +7,7 @@ import ui.factory.layout.GridBagLayoutFactory;
 public interface UIConstants {
 
 	final static String ADD_SUB_TASK = "  Add Sub Task  ";
+	final static String ADD_TIME = "  Add Time  ";
 
 	final static String ADD_TASK = "  Add Task  ";
 	static final double COMBO_BOX_WEIGHT = 1;
