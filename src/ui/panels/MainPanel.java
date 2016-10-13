@@ -2,6 +2,10 @@ package ui.panels;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -210,11 +214,24 @@ public class MainPanel extends JPanel implements UIConstants, TaskChangeListener
 				}
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logErrorToFile(sst.getStartTime(), sst.getStopTime(), currentSubTaskID);
 			}
 		}
 
+	}
+
+	private void logErrorToFile(Timestamp startTime2, Timestamp stopTime, int currentSubTaskID) {
+
+		StringBuilder errorString = new StringBuilder();
+		try {
+			errorString.append("Failed storing time in database:\n");
+			errorString.append("Start Time: " + startTime2.toString() + ", End Time: " + stopTime.toString()
+					+ ", Subtask ID: " + currentSubTaskID + "\n");
+			Files.write(Paths.get("error_log.txt"), errorString.toString().getBytes(), StandardOpenOption.APPEND);
+		} catch (IOException e) {
+			JOptionPane.showConfirmDialog(this, "Failed to create error_log.txt\n" + errorString.toString(),
+					"Error Saving Error Log", JOptionPane.OK_OPTION);
+		}
 	}
 
 	@Override
