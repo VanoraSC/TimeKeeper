@@ -14,18 +14,21 @@ public class CustomJFrame extends JFrame {
 	public CustomJFrame() {
 		super();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setResizable(false);
 	}
 
 	public CustomJFrame(boolean autoClose) {
 		super();
 		if (autoClose)
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setResizable(false);
 	}
 
 	public CustomJFrame(String s, boolean autoClose) {
 		super(s);
 		if (autoClose)
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setResizable(false);
 	}
 
 	@Override
